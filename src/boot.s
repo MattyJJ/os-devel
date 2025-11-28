@@ -1,0 +1,31 @@
+## MULTIBOOT
+.section .multiboot
+.align 4
+    .long 0x1BADB002 
+    .long 0x00000003 
+    .long -(0x1BADB002 + 0x00000003) 
+
+
+## STACK SETUP 16KB
+.section .bss
+.align 16
+stack_bottom:
+    .skip 16384
+stack_top:
+
+.section .text
+.global _start
+.type _start, @function
+_start:
+    mov $stack_top, %esp
+
+    push %ebx
+    push %eax
+    call kernel_entry
+
+    cli
+.hang:  hlt
+    jmp .hang
+
+.size _start, . - _start
+
